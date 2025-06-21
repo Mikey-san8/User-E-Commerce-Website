@@ -1,0 +1,119 @@
+﻿@page "/"
+@layout LayoutMain
+@rendermode InteractiveServer
+
+@if (categoryImages == null || products == null)
+{
+    <p class="container mx-auto flex-grow">Loading...</p>
+}
+else
+{
+    <div class="container mx-auto py-4 px-2 lg:px-0 mb-4">
+        <h1 class="text-2xl font-semibold mb-4">Categories</h1>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-12 gap-4 mb-12">
+            @foreach (var cat in categoryImages)
+            {
+                <NavLink href="@($"/products?category={cat.Category}")"
+                         class="block bg-white rounded shadow hover:bg-gray-100 overflow-hidden text-center p-2">
+                    <img src="@cat.ImageUrl" alt="@cat.Category"
+                         class="w-full h-auto object-obtain" />
+                    <div class="p-2">
+                        <p class="font-semibold text-sm">
+                            @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(cat.Category.Replace("-", " "))
+                        </p>
+                    </div>
+                </NavLink>
+            }
+        </div>
+
+        <h1 class="text-2xl font-semibold mb-4">For You</h1>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+            @foreach (var product in products)
+            {
+                <div class="bg-white rounded-lg shadow p-4 border border-transparent hover:border-secondary cursor-pointer transition duration-200">
+
+                    <img src="@product.Thumbnail" alt="@product.Title" class="w-full h-48 object-contain mb-2 rounded" />
+
+                    <div class="flex overflow-x-auto gap-2 mb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                        @foreach (var image in product.Images)
+                        {
+                            <img src="@image" alt="@product.Title"
+                                 class="h-10 w-10 object-contain rounded flex-shrink-0 border border-gray-200 hover:border-secondary" />
+                        }
+                    </div>
+
+                    <div class="flex justify-between items-center gap-4 mb-1">
+                        <h2 class="text-sm font-medium truncate">@product.Title</h2>
+                        <span class="text-sm text-secondary text-nowrap">⭐ @product.Rating/5</span>
+                    </div>
+
+                    <p class="text-gray-600 text-sm truncate mb-2">@product.Description</p>
+
+                    <div class="flex justify-between items-center mt-2 gap-4">
+                        <p class="text-lg font-bold text-green-700">₱@($"{product.Price * 56.5m:0.00}")</p>
+                        <span class="text-sm text-gray-500">@product.Stock pcs.</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (products.Count < allProducts.Count)
+        {
+            <div class="flex justify-center">
+                <button @onclick="LoadMore"
+                        class="w-full max-w-lg px-6 py-2 bg-secondary text-white rounded hover:bg-primary transition duration-200">
+                    Load More
+                </button>
+            </div>
+        }
+
+    </div>
+}
+
+@code {
+    private List<dataCategoriesResponse>? categories;
+    private List<dataProducts> allProducts = new();
+    private List<dataProducts> products = new();
+    private int visibleCount = 24;
+    private const int LoadStep = 12;
+    private List<CategoryImage> categoryImages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await Http.GetFromJsonAsync<List<dataCategoriesResponse>>("products/categories");
+        var response = await Http.GetFromJsonAsync<dataProductsResponse>("products?limit=0");
+        allProducts = response?.Products ?? new List<dataProducts>();
+
+        categoryImages.Clear();
+
+        if (categories != null)
+        {
+            foreach (var cat in categories)
+            {
+                var match = allProducts.FirstOrDefault(p =>
+                    string.Equals(p.Category, cat.Slug, StringComparison.OrdinalIgnoreCase));
+
+                categoryImages.Add(new CategoryImage
+                {
+                    Category = cat.Slug,
+                    ImageUrl = match?.Thumbnail
+                             ?? match?.Images?.FirstOrDefault()
+                             ?? "https://via.placeholder.com/300x200?text=" + Uri.EscapeDataString(cat.Slug)
+                });
+            }
+        }
+
+        products = allProducts.Take(visibleCount).ToList();
+    }
+
+    private void LoadMore()
+    {
+        visibleCount += LoadStep;
+        if (visibleCount > allProducts.Count)
+            visibleCount = allProducts.Count;
+
+        products = allProducts.Take(visibleCount).ToList();
+    }
+
+}
+
