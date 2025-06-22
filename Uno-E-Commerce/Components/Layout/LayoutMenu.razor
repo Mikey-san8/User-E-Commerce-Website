@@ -1,0 +1,27 @@
+﻿@rendermode InteractiveServer
+
+<!-- Wrapper must be relative to contain absolute menu -->
+<div class="relative md:hidden">
+    <button @onclick="ToggleMobileMenu"
+            class="text-2xl text-text text-center font-semibold">
+        ☰
+    </button>
+
+    @if (showMobileMenu)
+    {
+        <!-- Absolute menu overlaps header, anchored to button -->
+        <div class="absolute right-0 bg-white text-secondary shadow-lg rounded-lg z-50 min-w-[10rem]">
+            <a href="/login" class="block px-4 py-2 hover:bg-gray-100">Login</a>
+            <a href="/register" class="block px-4 py-2 hover:bg-gray-100">Sign Up</a>
+        </div>
+    }
+</div>
+
+@code {
+    private bool showMobileMenu = false;
+
+    private void ToggleMobileMenu()
+    {
+        showMobileMenu = !showMobileMenu;
+    }
+}

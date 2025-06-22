@@ -8,9 +8,9 @@
 }
 else
 {
-    <div class="container mx-auto py-4 px-2 lg:px-0 mb-4">
+    <div class="container mx-auto py-4 px-6 lg:px-0 mb-4">
         <h1 class="text-2xl font-semibold mb-4">Categories</h1>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-12 gap-4 mb-12">
+        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-12 gap-4 mb-12">
             @foreach (var cat in categoryImages)
             {
                 <NavLink href="@($"/products?category={cat.Category}")"

@@ -7,37 +7,74 @@
 }
 else
 {
-    <main class="container mx-auto flex gap-5 mb-12 py-4">
+    <main class="container mx-auto flex flex-col md:flex-row gap-5 mb-12 py-4 px-6 lg:px-0">
         <aside>
             <a href="/" class="text-lg text-nowrap font-semibold">+ All Categories</a>
 
             @if (distinctBrands.Count > 0)
             {
-                <div class="flex flex-col gap-2 mt-4">
-                    <h3 class="font-semibold text-gray-400">Brand</h3>
+                <div class="flex flex-wrap gap-4 mt-2">
+                    <div class="flex flex-col gap-1 bg-white rounded-lg p-2 shadow-lg">
+                        <h3 class="font-semibold text-gray-400">Brand</h3>
+                        <ul>
+                            @foreach (var brand in distinctBrands)
+                            {
+                                <li>
+                                    <NavLink href="@($"/products?category={Category}&brand={brand}")"
+                                             class="text-text hover:text-secondary text-nowrap">
+                                        @brand
+                                    </NavLink>
+                                </li>
+                            }
+                        </ul>
+                    </div>
 
-                    <ul class="space-y-1 list-unstyled text-decoration-none">
-                        @foreach (var brand in distinctBrands)
-                        {
-                            <li>
-                                <NavLink href="@($"/products?category={Category}&brand={brand}")"
-                                         class="text-text hover:text-secondary text-nowrap">
-                                    @brand
-                                </NavLink>
-                            </li>
-                        }
-                    </ul>
+                    <div class="flex flex-col gap-1 bg-white rounded-lg p-2 shadow-lg">
+                        <h3 class="font-semibold text-gray-400">Tags</h3>
+                        <ul>
+                            <li>Tech</li>
+                            <li>Fashion</li>
+                            <li>Gaming</li>
+                            <li>Mobile</li>
+                            <li>Lifestyle</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex flex-col gap-1 bg-white rounded-lg p-2 shadow-lg">
+                        <h3 class="font-semibold text-gray-400">Shipping</h3>
+                        <ul>
+                            <li>J&T Express</li>
+                            <li>LBC Express</li>
+                            <li>eGatang Services</li>
+                            <li>2Go Express</li>
+                            <li>Flash Express</li>
+                            <li>Ninja Van</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex flex-col gap-1 bg-white rounded-lg p-2 shadow-lg">
+                        <h3 class="font-semibold text-gray-400">Rating</h3>
+                        <ul>
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                            <li>4</li>
+                            <li>5</li>
+                        </ul>
+                    </div>
+
                 </div>
+
             }
         </aside>
 
         <article>
             <h1 class="text-xl font-semibold mb-4">Product List</h1>
 
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center gap-4 mb-4 text-sm">
                 <div class="flex items-center gap-2">
-                    <label for="sortBy" class="text-sm font-medium">Sort by:</label>
-                    <select @onchange="OnSortChanged" class="border px-2 py-1 rounded">
+                    <label for="sortBy" class="font-medium">Sort by:</label>
+                    <select @onchange="OnSortChanged" class="border py-1 rounded">
                         <option value="default">Relevance</option>
                         <option value="priceLow">Price: Low to High</option>
                         <option value="priceHigh">Price: High to Low</option>
@@ -45,10 +82,10 @@ else
                     </select>
                 </div>
 
-                <div class="flex justify-center items-center gap-4">
-                    <button @onclick="PrevPage" disabled="@(_skip == 0)" class="px-4 py-2 text-white text-sm bg-secondary rounded shadow-md">Previous</button>
+                <div class="flex justify-end items-center gap-2">
+                    <button @onclick="PrevPage" disabled="@(_skip == 0)" class="px-2 py-1 text-white bg-secondary rounded shadow-md">&larr;</button>
                     <span>Page @((_skip / _limit) + 1)</span>
-                    <button @onclick="NextPage" disabled="@(_skip + _limit >= _total)" class="px-4 py-2 text-white text-sm bg-secondary rounded shadow-md">Next</button>
+                    <button @onclick="NextPage" disabled="@(_skip + _limit >= _total)" class="px-2 py-1 text-white bg-secondary rounded shadow-md">&rarr;</button>
                 </div>
             </div>
 
